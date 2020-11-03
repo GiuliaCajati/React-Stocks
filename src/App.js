@@ -6,99 +6,89 @@ const API = "http://localhost:3000/stocks"
 class App extends Component {
   constructor() {
     super()
-    let stocksArray = []
     this.state = {
-      apiLoaded: false,
-      portfolio:[],
-      filteredStocks:[]
+      portfolioIds:[],
+      stocksArray: [],
+      filter: "All",
+      sort: "None"
     }
   }
 
   componentDidMount() {
     fetch(API)
     .then(data => data.json())
-    .then(stockInfo => {this.renderStocks(stockInfo)})
+    .then(stocks => this.setState({
+      stocksArray: stocks
+    }))
   }
 
-  renderStocks = (stockInfo) => {
-    this.stocksArray = stockInfo
-    this.setState({
-      apiLoaded: true,
-      filteredStocks: stockInfo
-    })
+
+   purchaseStock = (purchasedStockId) => {
+    if(!this.state.portfolioIds.find(portfolioId => portfolioId === purchasedStockId))
+    {this.setState({
+      portfolioIds: [...this.state.portfolioIds, purchasedStockId]
+    })}
   }
 
-   purchaseStock = (stock) => {
-    //if stock already in portfolio do not dupe
-    //passed to StockContainer 
-    const updatedPortfolio = this.state.portfolio.filter(portfoliostock => portfoliostock.id !== stock.id);
+  sellStock = (soledStockId) => {
+    //go through portfolioId array remove any that match soledStockId
     this.setState({
-      portfolio: updatedPortfolio
-    })
-    this.setState({
-      portfolio: [...updatedPortfolio, stock]
+      portfolioIds: this.state.portfolioIds.filter(soldStock => soldStock !== soledStockId)
     })
   }
 
-  sellStock = (stock) => {
-    //scan through portfolio array remove ones that match stock.id 
-    const updatedPortfolio = this.state.portfolio.filter(portfoliostock => portfoliostock.id !== stock.id);
-    this.setState({
-      portfolio: updatedPortfolio
-    })
+  filterStocks = filterValue  => {
+    this.setState({ filter: filterValue })
+  }
+  sortStocks = sortValue => {
+    this.setState({ sort: sortValue })
   }
 
-  filterStocks = (filterValue) => {
-    //filter Tech, Sportswear, Finance, All
-    //passed to SeachBar 
-    if(filterValue!=="All"){
-       this.setState({
-        filteredStocks: (this.stocksArray.filter(stock => stock.type === filterValue))
-    })
-    }else{
-      this.setState({
-        filteredStocks: this.stocksArray
-    })
+  displayStocks = () => {
+    let filteredStocks = [...this.state.stocksArray] //all stocks 
+    if(this.state.filter !== "All"){
+      return filteredStocks.filter(stock => stock.type === this.state.filter) // type: Tech or Sportswear or Finance
     }
-  }
-
-
-  sortStocks = (sortValue) =>{
-    //passed to SeachBar 
-    if (sortValue === "Alphabetically"){
-      this.setState({
-        filteredStocks: this.state.filteredStocks.sort((a,b) => a.ticker.localeCompare(b.ticker))
-      })
-    }else if(sortValue === "Price"){
-      this.setState({
-        filteredStocks: this.state.filteredStocks.sort((a,b) =>  a.price - b.price)
-      })
+    switch(this.state.sort){
+      case "Alphabetically":
+        return filteredStocks.sort((a,b) => a.name > b.name ? 1 : -1)
+      case "Price":
+        return filteredStocks.sort((a,b) => a.price > b.price ? 1 : -1)
+      default:
+        return filteredStocks
     }
+
   }
-  
+
+
   render() {
+    //return portfolio data from array of Ids
+    let portfolioData = this.state.portfolioIds.map(id => this.state.stocksArray.find(stock => (stock.id === id)))
+    //return stock array based on filter/sort
+    let displayStocks = this.displayStocks()
+
     return (
       <div>
-        <Header  hello={"bob"}/>
-        {this.state.apiLoaded?<MainContainer
+        <Header/>
+        <MainContainer
 
-        //filtered stocks array: held in the App used used in the StockContainer
-        stocksArray={this.state.filteredStocks}
+        //filtered stocks array: Used in the StockContainer
+        stocksArray={displayStocks}
 
-        //portfolio array: held in the App used used in the PortfolioContainer
-        portfolio={this.state.portfolio}
+        //portfolio array: Used in the PortfolioContainer
+        portfolioData={portfolioData}
 
-        //function to filterStocks: runs in the App (called in the SearchBar)
+        //function to filterStocks: Used in the SearchBar
         filterStocks={this.filterStocks}
 
-        //function to sortStocks: runs in the App (called in the SearchBar)
+        //function to sortStocks: Used in the SearchBar
         sortStocks={this.sortStocks}
 
-        //function to sellStock: called in the PortfolioContainer
+        //function to sellStock: Used in the PortfolioContainer
         sellStock={this.sellStock} 
 
-        //function to purchaseStock: called in the StockContainer
-        purchaseStock ={this.purchaseStock}/>:null}
+        //function to purchaseStock: Used in the StockContainer
+        purchaseStock ={this.purchaseStock}/>
       </div>
     );
   }
@@ -107,26 +97,4 @@ class App extends Component {
 export default App;
 
 
-// filterStocks = (filterValue) => {
-//   console.log(filterValue)
-//   if (filterValue === "Tech"){
-//      //let techStocks = (this.stocksArray.filter(stock => stock.type == "Tech"))
-//      this.setState({
-//       filteredStocks: (this.stocksArray.filter(stock => stock.type === "Tech"))
-//       //filteredStocks: [... this.state.filteredStocks, techStocks]
-//     })
-//   }else if(filterValue === "Sportswear"){
-//      this.setState({
-//       filteredStocks: (this.stocksArray.filter(stock => stock.type === "Sportswear"))
-//     })
-//   }else if(filterValue === "Finance"){
-//      this.setState({
-//       filteredStocks: (this.stocksArray.filter(stock => stock.type === "Finance"))
-//     })
-//   }else{
-//     //all
-//     this.setState({
-//       filteredStocks: (this.stocksArray)
-//     })
-//   }   
-// }
+ 

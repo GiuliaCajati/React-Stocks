@@ -7,13 +7,14 @@ class PortfolioContainer extends Component {
     return (
       <div>
         <h2>My Portfolio</h2>
-          {this.props.portfolioStocks.map(portfolioStock => 
+        {this.props.portfolioData!==undefined?
+          this.props.portfolioData.map(portfolioStock => 
           <div className="card">
-            <div className="card-body" onClick={() => this.props.sellStock(portfolioStock)}> 
+            <div className="card-body" onClick={() => this.props.sellStock(portfolioStock.id)}> 
               <h5 className="card-title"> {portfolioStock.name}</h5> 
               <p className="card-text">{portfolioStock.price}</p>
               </div>
-              </div>)}
+              </div>):null}
       </div>
     );
   }

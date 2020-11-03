@@ -22,8 +22,8 @@ class MainContainer extends Component {
             </div>
 
             <div className="col-4">
-            <PortfolioContainer portfolioStocks={this.props.portfolio} sellStock={this.props.sellStock}/>
-  
+            <PortfolioContainer portfolioData={this.props.portfolioData} sellStock={this.props.sellStock}/>
+            
             </div>
           </div>
       </div>
