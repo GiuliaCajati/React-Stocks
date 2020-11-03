@@ -7,9 +7,9 @@ class StockContainer extends Component {
     return (
       <div>
         <h2>Stocks</h2>
-        {
-          //render the list of stocks here
-        }
+        {this.props.stocksArray.map(stock => 
+          (<Stock purchaseStock={this.props.purchaseStock} 
+          stock={stock} key={stock.id}/>))}
       </div>
     );
   }
@@ -17,3 +17,4 @@ class StockContainer extends Component {
 }
 
 export default StockContainer;
+

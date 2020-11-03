@@ -1,6 +1,17 @@
 h1{
   padding: 2rem;
+  color: grey;
 }
+img{
+  width: 5%;
+  position: absolute;
+  margin: 1%
+}
+
+div#header{
+  margin: 1%
+}
+
 
 h2{
   text-align: center;
@@ -16,4 +27,8 @@ h2{
   width: 50%;
   margin: 0 auto;
   text-align: center;
+}
+
+body{
+  background-color: rgba(224, 234, 235, 0.863)
 }
